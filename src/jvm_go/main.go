@@ -3,6 +3,7 @@ package main
 import (
 	"jvm_go/utils"
 	"fmt"
+	"jvm_go/classfile"
 )
 
 func main() {
@@ -15,8 +16,8 @@ func main() {
 		startJVM(cmd)
 	}
 }
+
 func startJVM(cmd *utils.Cmd) {
 
-	fmt.Printf("classpath:%s class:%s args:%v\n", cmd.CpOption, cmd.ClassName, cmd.Args)
-
+	//fmt.Printf("classpath:%s class:%s args:%v\n", cmd.CpOption, cmd.ClassName, cmd.Args)
 }
