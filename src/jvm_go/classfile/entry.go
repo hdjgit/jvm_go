@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"io/ioutil"
 	"fmt"
+	"os"
 )
 
 /**
@@ -21,6 +22,15 @@ type Entry interface {
  */
 type DirEntry struct {
 	dirPath string
+}
+
+const PathListSeparator string = string(os.PathListSeparator)
+
+/**
+根据不同的路径，返回不同的Entry
+ */
+func NewEntry(path string) *Entry{
+	return nil
 }
 
 func NewDirEntry(dirPath string) *DirEntry {
