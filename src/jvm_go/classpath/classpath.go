@@ -1,4 +1,4 @@
-package classfile
+package classpath
 
 import (
 	"os"
