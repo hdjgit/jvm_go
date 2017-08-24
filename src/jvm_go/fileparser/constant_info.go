@@ -24,9 +24,9 @@ type ConstantInfo interface {
 
 //读取常量信息，先读取一个tag，在根据tag的类型，newConstantInfo，不同的类型不同的读取方式
 func readConstantInfo(reader *ClassReader, cp ConstantPool) ConstantInfo {
-	tag := reader.readUint8() //读取tag
-	constantInfo := newConstantInfo(tag, cp)
-	constantInfo.readInfo(reader)
+	tag := reader.readUint8()                //读取tag
+	constantInfo := newConstantInfo(tag, cp) //构造constantInfo
+	constantInfo.readInfo(reader)            //读取constantInfo的数据
 	return constantInfo
 }
 
@@ -41,6 +41,12 @@ func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo {
 		return &ConstantLongInfo{}
 	case CONSTANT_Double:
 		return &ConstantDoubleInfo{}
+	case CONSTANT_Utf8:
+		return &ConstantUtf8Info{}
+	case CONSTANT_String:
+		return &ConstantStringInfo{cp: cp}
+	case CONSTANT_Class:
+		return &ConstantClassInfo{cp: cp}
 	}
 	//TODO
 	panic("")
