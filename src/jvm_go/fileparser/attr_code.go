@@ -36,4 +36,5 @@ func readExceptionTable(reader *ClassReader) []*ExceptionTableEntry {
 			catchType: reader.readUint16(),
 		}
 	}
+	return exceptionTable
 }

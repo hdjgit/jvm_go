@@ -21,12 +21,32 @@ func main() {
 
 func startJVM(cmd *utils.Cmd) {
 
-
 	classpath := classpath.LoadClasspath(cmd.JreOption, cmd.CpOption)
 
 	content, _, _ := classpath.ReadClass(cmd.ClassName)
 
-	fileparser.Parse(content)
+	classFile, err := fileparser.Parse(content)
 
+	if err!=nil{
+		panic(err)
+	}
+	printClassInfo(classFile)
 	//fmt.Printf("content:%v", content)
+}
+func printClassInfo(cf *fileparser.ClassFile) {
+	fmt.Printf("version: %v.%v\n", cf.MajorVersion(), cf.MinorVersion())
+	fmt.Printf("constants count: %v\n", len(cf.ConstantPool()))
+	fmt.Printf("access flags: 0x%x\n", cf.AccessFlags())
+	fmt.Printf("this class: %v\n", cf.ClassName())
+	fmt.Printf("super class: %v\n", cf.SuperClassName())
+	fmt.Printf("interfaces: %v\n", cf.InterfaceNames())
+	fmt.Printf("fields count: %v\n", len(cf.Fields()))
+	for _, f := range cf.Fields() {
+		fmt.Printf("  %s\n", f.Name())
+	}
+	fmt.Printf("methods count: %v\n", len(cf.Methods()))
+	for _, m := range cf.Methods() {
+		fmt.Printf("  %s\n", m.Name())
+	}
+
 }
