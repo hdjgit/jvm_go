@@ -36,3 +36,23 @@ func (self ConstantPool) getUtf8(index uint16) string {
 	}
 	return utf8Info.str
 }
+
+func (self ConstantPool) getClassName(index uint16) string {
+	info := self.getConstantInfo(index)
+	classInfo, ok := info.(*ConstantClassInfo)
+	if !ok {
+		panic("index is not class name")
+	}
+	return classInfo.ClassName()
+}
+
+func (self ConstantPool) getNameAndType(index uint16) (string, string) {
+	info := self.getConstantInfo(index)
+	nameAndTypeInfo, ok := info.(*ConstantNameAndType)
+	if !ok {
+		panic("index is not constant utf8")
+	}
+	name := self.getUtf8(nameAndTypeInfo.nameIndex)
+	_type := self.getUtf8(nameAndTypeInfo.descriptorIndex)
+	return name, _type
+}

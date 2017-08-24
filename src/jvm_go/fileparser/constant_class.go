@@ -10,6 +10,6 @@ func (self *ConstantClassInfo) readInfo(reader *ClassReader) {
 	self.classIndex = reader.readUint16()
 }
 
-func (self *ConstantClassInfo) ClassName(reader *ClassReader) string {
+func (self *ConstantClassInfo) ClassName() string {
 	return self.cp.getUtf8(self.classIndex)
 }
