@@ -40,6 +40,10 @@ func (self *ClassFile) read(reader *ClassReader) {
 	self.readAndCheckMagic(reader)
 	self.readAndCheckVersion(reader)
 	self.constantPool = ReadConstantPool(reader)
+	self.accessFlags=reader.readUint16()
+	self.thisClass=reader.readUint16()
+	self.superClass=reader.readUint16()
+	self.interfaces=reader.readUint16s()
 }
 
 //读取并检查版本好
