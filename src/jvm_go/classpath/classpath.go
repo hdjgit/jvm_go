@@ -88,15 +88,15 @@ func (self *ClassPath) ReadClass(className string) ([]byte, Entry, error) {
 	fileName := strings.Replace(className, ".", "/", -1) + ".class"
 
 	if content, entry, err := self.BootStrapClasspath.ReadClass(fileName); err == nil {
-		fmt.Printf("read class from bootstrap!")
+		fmt.Printf("read class from bootstrap!\n")
 		return content, entry, nil
 	}
 
 	if content, entry, err := self.ExtensionClasspath.ReadClass(fileName); err == nil {
-		fmt.Printf("read class from extension!")
+		fmt.Printf("read class from extension!\n")
 		return content, entry, nil
 	}
 
-	fmt.Printf("read class from classpath!")
+	fmt.Printf("read class from classpath!\n")
 	return self.UserClasspath.ReadClass(fileName)
 }

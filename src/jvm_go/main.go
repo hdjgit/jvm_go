@@ -4,6 +4,7 @@ import (
 	"jvm_go/utils"
 	"fmt"
 	"jvm_go/classpath"
+	"jvm_go/fileparser"
 )
 
 func main() {
@@ -25,5 +26,7 @@ func startJVM(cmd *utils.Cmd) {
 
 	content, _, _ := classpath.ReadClass(cmd.ClassName)
 
-	fmt.Printf("content:%v", content)
+	fileparser.Parse(content)
+
+	//fmt.Printf("content:%v", content)
 }
