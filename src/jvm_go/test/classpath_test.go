@@ -14,3 +14,8 @@ func TestDirEntry(t *testing.T) {
 	}
 	fmt.Printf("classContent:%v", classContent)
 }
+
+func TestExists(t *testing.T) {
+	exist := classfile.Exists("/home/sss")
+	fmt.Print(exist)
+}

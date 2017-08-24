@@ -20,4 +20,10 @@ func main() {
 func startJVM(cmd *utils.Cmd) {
 
 	fmt.Printf("classpath:%s class:%s args:%v\n", cmd.CpOption, cmd.ClassName, cmd.Args)
+
+	classpath := classfile.LoadClasspath(cmd.JreOption, cmd.CpOption)
+
+	content, _, _ := classpath.ReadClass(cmd.ClassName)
+
+	fmt.Printf("content:%v", content)
 }
