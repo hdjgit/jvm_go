@@ -9,6 +9,7 @@ import (
 
 func main() {
 	cmd := utils.ParseCmd()
+
 	if cmd.VersionFlag {
 		fmt.Println("version 0.0.1")
 	} else if cmd.HelpFlag || cmd.ClassName == "" {
@@ -20,7 +21,6 @@ func main() {
 
 func startJVM(cmd *utils.Cmd) {
 
-	fmt.Printf("classpath:%s class:%s args:%v\n", cmd.CpOption, cmd.ClassName, cmd.Args)
 
 	classpath := classpath.LoadClasspath(cmd.JreOption, cmd.CpOption)
 
