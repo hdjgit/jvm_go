@@ -37,9 +37,9 @@ func (self LocalVars) SetLong(index uint, val int64) {
 }
 
 func (self LocalVars) GetLong(index uint) int64 {
-	low := self[index].num
-	high := self[index+1].num
-	return int64(high<<32) | int64(low)
+	low := uint32(self[index].num)
+	high := uint32(self[index+1].num)
+	return int64(high)<<32 | int64(low)
 }
 
 //double 先变成 long
