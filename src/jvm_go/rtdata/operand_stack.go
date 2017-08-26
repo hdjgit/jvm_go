@@ -6,7 +6,7 @@ import "math"
 
 type OperandStack struct {
 	size  uint
-	slots []Slot //TODO 如何知道这些操作数，究竟是什么类型？
+	slots []Slot //操作数栈只知道操作的数，不知道操作的类型，所以指令集中含有操作的类型
 }
 
 func newOperandStack(maxStack uint) *OperandStack {
