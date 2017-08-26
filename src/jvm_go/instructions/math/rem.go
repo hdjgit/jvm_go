@@ -60,5 +60,3 @@ func (self *LREM) Execute(frame *rtdata.Frame) {
 	stack.PushLong(result)
 }
 
-
-
