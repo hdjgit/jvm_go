@@ -29,3 +29,8 @@ func (self *Thread) PC() int {
 func (self *Thread) SetPC(pc int) {
 	self.pc = pc
 }
+
+func (self *Thread) NewFrame(maxLocals, maxStack uint) *Frame {
+	return NewFrame(self, maxLocals, maxStack)
+}
+
