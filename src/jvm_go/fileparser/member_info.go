@@ -65,3 +65,13 @@ func (self *MemberInfo) CodeAttribute() *CodeAttribute {
 	}
 	return nil
 }
+//返回常量值属性
+func (self *MemberInfo) ConstantValueAttribute() *ConstantValueAttribute {
+	for _, attrInfo := range self.attributes {
+		switch attrInfo.(type) {
+		case *ConstantValueAttribute:
+			return attrInfo.(*ConstantValueAttribute)
+		}
+	}
+	return nil
+}
