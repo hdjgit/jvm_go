@@ -1,6 +1,9 @@
 package math
 
-import "jvm_go/instructions/base"
+import (
+	"jvm_go/instructions/base"
+	"jvm_go/rtdata"
+)
 
 // Subtract double
 type DSUB struct{ base.NoOperandsInstruction }

@@ -36,7 +36,7 @@ func (self *DSTORE_3) Execute(frame *rtdata.Frame) {
 	_dstore(frame, 3)
 }
 
-func _dstore(frame *rtda.Frame, index uint) {
+func _dstore(frame *rtdata.Frame, index uint) {
 	val := frame.OperandStack().PopDouble()
 	frame.LocalVars().SetDouble(index, val)
 }

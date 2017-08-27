@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"jvm_go/classpath"
 	"jvm_go/fileparser"
+	"jvm_go/log"
 )
 
 func main() {
@@ -27,11 +28,30 @@ func startJVM(cmd *utils.Cmd) {
 
 	classFile, err := fileparser.Parse(content)
 
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
-	printClassInfo(classFile)
+
+	mainMethod := getMainMethod(classFile)
+
+	if mainMethod != nil {
+		interpret(mainMethod)
+	} else {
+		log.Infof("main method not found in class %s", cmd.ClassName)
+	}
+
+	//printClassInfo(classFile)
 	//fmt.Printf("content:%v", content)
+}
+
+//获取类文件中的main方法
+func getMainMethod(classFile *fileparser.ClassFile) *fileparser.MemberInfo {
+	for _, method := range classFile.Methods() {
+		if method.Name() == "main" && method.Descriptor() == "([Ljava/lang/String;)V" {
+			return method
+		}
+	}
+	return nil
 }
 func printClassInfo(cf *fileparser.ClassFile) {
 	fmt.Printf("version: %v.%v\n", cf.MajorVersion(), cf.MinorVersion())
