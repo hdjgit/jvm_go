@@ -17,12 +17,12 @@ func (self *INVOKE_STATIC) Execute(frame *rtdata.Frame) {
 		panic("java.lang.IncompatibleClassChangeError")
 	}
 
-	//class := resolvedMethod.Class()
-	//if !class.InitStarted() {
-	//	frame.RevertNextPC()
-	//	base.InitClass(frame.Thread(), class)
-	//	return
-	//}
+	class := resolvedMethod.Class()
+	if !class.InitStarted() {
+		frame.RevertNextPC()
+		base.InitClass(frame.Thread(), class)
+		return
+	}
 
 	base.InvokeMethod(frame, resolvedMethod)
 }

@@ -3,6 +3,7 @@ package base
 import (
 	"jvm_go/rtdata"
 	"jvm_go/rtdata/heap"
+	"fmt"
 )
 
 /**
@@ -22,6 +23,16 @@ func InvokeMethod(invokeFrame *rtdata.Frame, method *heap.Method) {
 			slot := invokeFrame.OperandStack().PopSlot()
 			//塞到新的栈里面
 			newFrame.LocalVars().SetSlot(uint(i), slot)
+		}
+	}
+
+	// hack! TODO
+	if method.IsNative() {
+		if method.Name() == "registerNatives" {
+			thread.PopFrame()
+		} else {
+			panic(fmt.Sprintf("native method: %v.%v%v\n",
+				method.Class().Name(), method.Name(), method.Descriptor()))
 		}
 	}
 }
