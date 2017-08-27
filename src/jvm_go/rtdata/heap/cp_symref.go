@@ -1,7 +1,5 @@
 package heap
 
-import "jvm_go/fileparser"
-
 //类型符号引用
 
 type SymRef struct {
@@ -10,4 +8,20 @@ type SymRef struct {
 	class     *Class        //解析后的类结构体指针
 }
 
+//类符号引用解析
+func (self *SymRef) ResolvedClass() *Class {
+	if self.class == nil {
+		self.resolveClassRef()
+	}
+	return self.class
+}
 
+// jvms8 5.4.3.1
+func (self *SymRef) resolveClassRef() {
+	d := self.cp.class
+	c := d.loader.LoadClass(self.className)
+	if !c.isAccessibleTo(d) {
+		panic("java.lang.IllegalAccessError")
+	}
+	self.class = c
+}
