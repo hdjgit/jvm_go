@@ -12,12 +12,14 @@ import (
  */
 
 type Cmd struct {
-	HelpFlag    bool
-	VersionFlag bool
-	CpOption    string
-	ClassName   string
-	Args        []string
-	JreOption   string
+	HelpFlag         bool
+	VersionFlag      bool
+	VerboseClassFlag bool
+	VerboseInstFlag  bool
+	CpOption         string
+	ClassName        string
+	Args             []string
+	JreOption        string
 }
 
 func ParseCmd() *Cmd {
@@ -30,6 +32,9 @@ func ParseCmd() *Cmd {
 	flag.StringVar(&cmd.CpOption, "classpath", "", "classpath")
 	flag.StringVar(&cmd.CpOption, "cp", "", "classpath")
 	flag.StringVar(&cmd.JreOption, "XJre", "", "jre path")
+	flag.BoolVar(&cmd.VerboseClassFlag, "verbose", false, "enable verbose output")
+	flag.BoolVar(&cmd.VerboseClassFlag, "verbose:class", false, "enable verbose output")
+	flag.BoolVar(&cmd.VerboseInstFlag, "verbose:inst", false, "enable verbose output")
 	flag.Parse()
 
 	args := flag.Args()

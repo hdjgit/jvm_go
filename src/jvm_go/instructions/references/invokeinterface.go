@@ -1,0 +1,50 @@
+package references
+
+import (
+	"jvm_go/instructions/base"
+	"jvm_go/rtdata"
+	"jvm_go/rtdata/heap"
+)
+
+// Invoke interface method
+type INVOKE_INTERFACE struct {
+	index uint
+	// count uint8
+	// zero uint8
+}
+
+func (self *INVOKE_INTERFACE) FetchOperands(reader *base.BytecodeReader) {
+	self.index = uint(reader.ReadUint16())
+	reader.ReadUint8() // count
+	reader.ReadUint8() // must be 0
+}
+
+func (self *INVOKE_INTERFACE) Execute(frame *rtdata.Frame) {
+	cp := frame.Method().Class().ConstantPool()
+	methodRef := cp.GetConstant(self.index).(*heap.InterfaceMethodRef)
+	//通过操作数获取接口方法引用
+	resolvedMethod := methodRef.ResolvedInterfaceMethod()
+	if resolvedMethod.IsStatic() || resolvedMethod.IsPrivate() {
+		panic("java.lang.IncompatibleClassChangeError")
+	}
+
+	//获取引用
+	ref := frame.OperandStack().GetRefFromTop(resolvedMethod.ArgSlotCount() - 1)
+	if ref == nil {
+		panic("java.lang.NullPointerException") // todo
+	}
+	if !ref.Class().IsImplements(methodRef.ResolvedClass()) {
+		panic("java.lang.IncompatibleClassChangeError")
+	}
+
+	methodToBeInvoked := heap.LookupMethodInClass(ref.Class(),
+		methodRef.Name(), methodRef.Descriptor())
+	if methodToBeInvoked == nil || methodToBeInvoked.IsAbstract() {
+		panic("java.lang.AbstractMethodError")
+	}
+	if !methodToBeInvoked.IsPublic() {
+		panic("java.lang.IllegalAccessError")
+	}
+
+	base.InvokeMethod(frame, methodToBeInvoked)
+}

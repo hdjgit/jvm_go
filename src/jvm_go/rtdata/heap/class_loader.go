@@ -8,14 +8,16 @@ import (
 
 //一个类加载器，只会加载一遍某个类
 type ClassLoader struct {
-	cp       *classpath.ClassPath
-	classMap map[string]*Class //已经加载的类
+	cp          *classpath.ClassPath
+	classMap    map[string]*Class //已经加载的类
+	verboseFlag bool
 }
 
-func NewClassLoader(cp *classpath.ClassPath) *ClassLoader {
+func NewClassLoader(cp *classpath.ClassPath, verboseFlag bool) *ClassLoader {
 	return &ClassLoader{
-		cp:       cp,
-		classMap: make(map[string]*Class),
+		cp:          cp,
+		classMap:    make(map[string]*Class),
+		verboseFlag: verboseFlag,
 	}
 }
 
@@ -29,7 +31,9 @@ func (self *ClassLoader) loadNonArrayClass(name string) *Class {
 	data, entry := self.readClass(name)
 	class := self.defineClass(data)
 	link(class)
-	fmt.Printf("[Loaded %s from %s]\n", name, entry)
+	if self.verboseFlag {
+		fmt.Printf("[Loaded %s from %s]\n", name, entry)
+	}
 	return class
 }
 
@@ -64,7 +68,6 @@ func calcInstanceFieldSlotIds(class *Class) {
 	class.instanceSlotCount = slotId
 }
 
-
 func calcStaticFieldSlotIds(class *Class) {
 	slotId := uint(0)
 	for _, field := range class.fields {
@@ -88,8 +91,6 @@ func allocAndInitStaticVars(class *Class) {
 		}
 	}
 }
-
-
 
 func initStaticFinalVar(class *Class, field *Field) {
 	vars := class.staticVars
@@ -148,7 +149,7 @@ func resolveSuperClass(class *Class) {
 func parseClass(data []byte) *Class {
 	cf, err := fileparser.Parse(data)
 	if err != nil {
-		panic("java.lang.ClassFormatError")
+		panic(fmt.Sprintf("java.lang.ClassFormatError:%+v" ,err))
 	}
 	return newClass(cf)
 }

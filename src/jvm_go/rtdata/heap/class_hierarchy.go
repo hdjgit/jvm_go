@@ -47,3 +47,30 @@ func (self *Class) isSubInterfaceOf(iface *Class) bool {
 	}
 	return false
 }
+
+// self extends c
+func (self *Class) IsSubClassOf(other *Class) bool {
+	for c := self.superClass; c != nil; c = c.superClass {
+		if c == other {
+			return true
+		}
+	}
+	return false
+}
+
+// c extends self
+func (self *Class) IsSuperClassOf(other *Class) bool {
+	return other.IsSubClassOf(self)
+}
+
+// self implements iface
+func (self *Class) IsImplements(iface *Class) bool {
+	for c := self; c != nil; c = c.superClass {
+		for _, i := range c.interfaces {
+			if i == iface || i.isSubInterfaceOf(iface) {
+				return true
+			}
+		}
+	}
+	return false
+}

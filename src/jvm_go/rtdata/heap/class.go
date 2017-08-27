@@ -98,3 +98,23 @@ func (self *Class) getStaticMethod(name, descriptor string) *Method {
 	}
 	return nil
 }
+
+func (self *Class) GetPackageName() string {
+	if i := strings.LastIndex(self.name, "/"); i >= 0 {
+		return self.name[:i]
+	}
+	return ""
+}
+
+func (self *Class) Name() string {
+	return self.name
+}
+func (self *Class) Fields() []*Field {
+	return self.fields
+}
+func (self *Class) Methods() []*Method {
+	return self.methods
+}
+func (self *Class) SuperClass() *Class {
+	return self.superClass
+}

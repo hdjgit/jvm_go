@@ -25,7 +25,7 @@ func startJVM(cmd *utils.Cmd) {
 
 	classpath := classpath.LoadClasspath(cmd.JreOption, cmd.CpOption)
 
-	classLoader := heap.NewClassLoader(classpath)
+	classLoader := heap.NewClassLoader(classpath,cmd.VerboseClassFlag)
 
 	className := strings.Replace(cmd.ClassName, ".", "/", -1)
 
@@ -34,7 +34,7 @@ func startJVM(cmd *utils.Cmd) {
 	mainMethod := mainClass.GetMainMethod()
 
 	if mainMethod != nil {
-		interpret(mainMethod)
+		interpret(mainMethod,cmd.VerboseInstFlag)
 	} else {
 		fmt.Printf("Main method not found in class %s\n", cmd.ClassName)
 	}

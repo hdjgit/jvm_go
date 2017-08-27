@@ -6,9 +6,9 @@ import "jvm_go/fileparser"
 
 type Method struct {
 	ClassMember
-	maxStack  uint
-	maxLocals uint
-	code      []byte
+	maxStack     uint
+	maxLocals    uint
+	code         []byte
 	argSlotCount uint
 }
 
@@ -56,4 +56,23 @@ func (self *Method) calcArgSlotCount() {
 	if !self.IsStatic() {
 		self.argSlotCount++ // `this` reference
 	}
+}
+
+func (self *Method) IsSynchronized() bool {
+	return 0 != self.accessFlags&ACC_SYNCHRONIZED
+}
+func (self *Method) IsBridge() bool {
+	return 0 != self.accessFlags&ACC_BRIDGE
+}
+func (self *Method) IsVarargs() bool {
+	return 0 != self.accessFlags&ACC_VARARGS
+}
+func (self *Method) IsNative() bool {
+	return 0 != self.accessFlags&ACC_NATIVE
+}
+func (self *Method) IsAbstract() bool {
+	return 0 != self.accessFlags&ACC_ABSTRACT
+}
+func (self *Method) IsStrict() bool {
+	return 0 != self.accessFlags&ACC_STRICT
 }

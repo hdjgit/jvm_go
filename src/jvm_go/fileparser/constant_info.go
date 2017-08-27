@@ -1,5 +1,7 @@
 package fileparser
 
+import "fmt"
+
 //tag 常量值
 const (
 	CONSTANT_Class              = 7
@@ -64,5 +66,5 @@ func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo {
 		return &ConstantInvokeDynamicInfo{}
 	}
 	//TODO
-	panic("java.lang.ClassFormatError:constant pool tag")
+	panic(fmt.Sprintf("java.lang.ClassFormatError:constant pool tag:%d", tag))
 }
