@@ -19,6 +19,7 @@ func newMethods(class *Class, cfMethods []*fileparser.MemberInfo) []*Method {
 		methods[i].copyMemberInfo(cfMethod)
 		methods[i].copyAttributes(cfMethod)
 	}
+	return methods
 }
 func (self *Method) copyAttributes(cfMethod *fileparser.MemberInfo) {
 	if codeAttr := cfMethod.CodeAttribute(); codeAttr != nil {
@@ -26,4 +27,14 @@ func (self *Method) copyAttributes(cfMethod *fileparser.MemberInfo) {
 		self.maxLocals = codeAttr.MaxLocals()
 		self.code = codeAttr.Code()
 	}
+}
+
+func (self *Method) MaxStack() uint {
+	return self.maxStack
+}
+func (self *Method) MaxLocals() uint {
+	return self.maxLocals
+}
+func (self *Method) Code() []byte {
+	return self.code
 }

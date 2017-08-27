@@ -71,3 +71,30 @@ func (self *Class) IsAnnotation() bool {
 func (self *Class) IsEnum() bool {
 	return 0 != self.accessFlags&ACC_ENUM
 }
+
+func (self *Class) NewObject() *Object {
+	return newObject(self)
+}
+
+func (self *Class) ConstantPool() *ConstantPool {
+	return self.constantPool
+}
+func (self *Class) StaticVars() Slots {
+	return self.staticVars
+}
+
+func (self *Class) GetMainMethod() *Method {
+	return self.getStaticMethod("main", "([Ljava/lang/String;)V")
+}
+
+func (self *Class) getStaticMethod(name, descriptor string) *Method {
+	for _, method := range self.methods {
+		if method.IsStatic() &&
+			method.name == name &&
+			method.descriptor == descriptor {
+
+			return method
+		}
+	}
+	return nil
+}

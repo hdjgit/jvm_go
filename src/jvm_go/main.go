@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"jvm_go/classpath"
 	"jvm_go/fileparser"
-	"jvm_go/log"
+	"jvm_go/rtdata/heap"
+	"strings"
 )
 
 func main() {
@@ -24,22 +25,19 @@ func startJVM(cmd *utils.Cmd) {
 
 	classpath := classpath.LoadClasspath(cmd.JreOption, cmd.CpOption)
 
-	content, _, _ := classpath.ReadClass(cmd.ClassName)
+	classLoader := heap.NewClassLoader(classpath)
 
-	classFile, err := fileparser.Parse(content)
+	className := strings.Replace(cmd.ClassName, ".", "/", -1)
 
-	if err != nil {
-		panic(err)
-	}
+	mainClass := classLoader.LoadClass(className)
 
-	mainMethod := getMainMethod(classFile)
+	mainMethod := mainClass.GetMainMethod()
 
 	if mainMethod != nil {
 		interpret(mainMethod)
 	} else {
-		log.Infof("main method not found in class %s", cmd.ClassName)
+		fmt.Printf("Main method not found in class %s\n", cmd.ClassName)
 	}
-
 	//printClassInfo(classFile)
 	//fmt.Printf("content:%v", content)
 }

@@ -1,31 +1,26 @@
 package main
 
 import (
-	"jvm_go/fileparser"
 	"jvm_go/rtdata"
 	"jvm_go/instructions/base"
 	"jvm_go/instructions"
 	"fmt"
+	"jvm_go/rtdata/heap"
 )
 
 //解释器
-func interpret(methodInfo *fileparser.MemberInfo) {
-	codeAttr := methodInfo.CodeAttribute()
-	maxLocals := codeAttr.MaxLocals()
-	maxStack := codeAttr.MaxStack()
-	bytecode := codeAttr.Code()
-
+func interpret(method *heap.Method) {
 	thread := rtdata.NewThread()
-	frame := thread.NewFrame(maxLocals, maxStack)
+	frame := thread.NewFrame(method)
 	thread.PushFrame(frame)
 
 	defer catchErr(frame) //因为没有实现return指令，所以执行过程必定会出错
-	loop(thread, bytecode)
+	loop(thread, method.Code())
 }
 func loop(thread *rtdata.Thread, bytecode []byte) {
 	frame := thread.PopFrame()
 	reader := &base.BytecodeReader{}
-	fmt.Printf("bytecode：%+X\n",bytecode)
+	fmt.Printf("bytecode：%+X\n", bytecode)
 	for {
 		pc := frame.NextPC()
 		thread.SetPC(pc)

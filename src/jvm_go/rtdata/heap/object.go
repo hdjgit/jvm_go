@@ -11,3 +11,20 @@ type Object struct {
 
 //如何知道静态变量和实例变量需要多少空间，以及哪个字段对应Slots中的哪个位置呢？
 
+func newObject(class *Class) *Object {
+	return &Object{
+		class:  class,
+		fields: newSlots(class.instanceSlotCount),
+	}
+}
+
+func (self *Object) Class() *Class {
+	return self.class
+}
+func (self *Object) Fields() Slots {
+	return self.fields
+}
+
+func (self *Object) IsInstanceOf(class *Class) bool {
+	return class.isAssignableFrom(self.class)
+}
