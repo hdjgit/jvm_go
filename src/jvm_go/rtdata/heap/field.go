@@ -4,6 +4,7 @@ import "jvm_go/fileparser"
 
 type Field struct {
 	ClassMember
+	slotId uint
 }
 
 func newFields(class *Class, cfFields []*fileparser.MemberInfo) []*Field {

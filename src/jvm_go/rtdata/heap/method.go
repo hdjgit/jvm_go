@@ -11,7 +11,7 @@ type Method struct {
 	code      []byte
 }
 
-func newMethod(class *Class, cfMethods []*fileparser.MemberInfo) []*Method {
+func newMethods(class *Class, cfMethods []*fileparser.MemberInfo) []*Method {
 	methods := make([]*Method, len(cfMethods))
 	for i, cfMethod := range cfMethods {
 		methods[i] = &Method{}

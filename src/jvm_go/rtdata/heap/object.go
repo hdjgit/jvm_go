@@ -5,4 +5,9 @@ package heap
 //类变量也存放在方法区中
 
 type Object struct {
+	class  *Class
+	fields Slots
 }
+
+//如何知道静态变量和实例变量需要多少空间，以及哪个字段对应Slots中的哪个位置呢？
+
