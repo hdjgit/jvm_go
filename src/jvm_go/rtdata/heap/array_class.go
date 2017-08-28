@@ -29,3 +29,9 @@ func (self *Class) NewArray(count uint) *Object {
 		return &Object{self, make([]*Object, count)}
 	}
 }
+
+//根据类名推测出数组元素类名，然后用类加载器加载元素类即可
+func (self *Class) ComponentClass() *Class {
+	componentClassName := getComponentClassName(self.name)
+	return self.loader.LoadClass(componentClassName)
+}
