@@ -5,16 +5,16 @@ package heap
 //类变量也存放在方法区中
 
 type Object struct {
-	class  *Class
-	fields Slots
+	class *Class
+	data  interface{} //为了支持数组，把fields换成data
 }
 
 //如何知道静态变量和实例变量需要多少空间，以及哪个字段对应Slots中的哪个位置呢？
 
 func newObject(class *Class) *Object {
 	return &Object{
-		class:  class,
-		fields: newSlots(class.instanceSlotCount),
+		class: class,
+		data:  newSlots(class.instanceSlotCount),
 	}
 }
 
@@ -22,7 +22,7 @@ func (self *Object) Class() *Class {
 	return self.class
 }
 func (self *Object) Fields() Slots {
-	return self.fields
+	return self.data.(Slots)
 }
 
 func (self *Object) IsInstanceOf(class *Class) bool {

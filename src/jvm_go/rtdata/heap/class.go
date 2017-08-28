@@ -130,3 +130,10 @@ func (self *Class) InitStarted() bool {
 func (self *Class) StartInit() {
 	self.initStarted = true
 }
+func (self *Class) Loader() *ClassLoader {
+	return self.loader
+}
+func (self *Class) ArrayClass() *Class {
+	arrayClassName := getArrayClassName(self.name)
+	return self.loader.LoadClass(arrayClassName)
+}

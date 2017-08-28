@@ -25,8 +25,30 @@ func (self *ClassLoader) LoadClass(name string) *Class {
 	if class, ok := self.classMap[name]; ok {
 		return class //类已经加载过了
 	}
+	if name[0] == '[' {
+		return self.loadArrayClass(name)
+	}
 	return self.loadNonArrayClass(name)
 }
+
+//数组类直接在内存中生成
+func (self *ClassLoader) loadArrayClass(name string) *Class {
+	class := &Class{
+		accessFlags: ACC_PUBLIC, //TODO
+		name:        name,
+		loader:      self,
+		initStarted: true,
+		superClass:  self.LoadClass("java/lang/Object"),
+		interfaces: []*Class{
+			self.LoadClass("java/lang/Cloneable"),
+			self.LoadClass("java/io/Serializable"),
+		},
+	}
+	self.classMap[name] = class
+	return class
+}
+
+//普通类通过读取文件来加载类
 func (self *ClassLoader) loadNonArrayClass(name string) *Class {
 	data, entry := self.readClass(name)
 	class := self.defineClass(data)
@@ -149,7 +171,7 @@ func resolveSuperClass(class *Class) {
 func parseClass(data []byte) *Class {
 	cf, err := fileparser.Parse(data)
 	if err != nil {
-		panic(fmt.Sprintf("java.lang.ClassFormatError:%+v" ,err))
+		panic(fmt.Sprintf("java.lang.ClassFormatError:%+v", err))
 	}
 	return newClass(cf)
 }
