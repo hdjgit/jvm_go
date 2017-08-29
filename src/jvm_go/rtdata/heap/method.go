@@ -15,14 +15,62 @@ type Method struct {
 func newMethods(class *Class, cfMethods []*fileparser.MemberInfo) []*Method {
 	methods := make([]*Method, len(cfMethods))
 	for i, cfMethod := range cfMethods {
-		methods[i] = &Method{}
-		methods[i].class = class
-		methods[i].copyMemberInfo(cfMethod)
-		methods[i].copyAttributes(cfMethod)
-		methods[i].calcArgSlotCount()
+
+		methods[i] = newMethod(class, cfMethod)
+		//methods[i] = &Method{}
+		//methods[i].class = class
+		//methods[i].copyMemberInfo(cfMethod)
+		//methods[i].copyAttributes(cfMethod)
+		//methods[i].calcArgSlotCount()
 	}
 	return methods
 }
+
+func newMethod(class *Class, cfMethod *fileparser.MemberInfo) *Method {
+	method := &Method{}
+	method.class = class
+	method.copyMemberInfo(cfMethod)
+	method.copyAttributes(cfMethod)
+	md := parseMethodDescriptor(method.descriptor)
+	method.calcArgSlotCount(md.parameterTypes)
+	if method.IsNative() {
+		method.injectCodeAttribute(md.returnType)
+	}
+	return method
+}
+
+func (self *Method) calcArgSlotCount(paramTypes []string) {
+	for _, paramType := range paramTypes {
+		self.argSlotCount++
+		if paramType == "J" || paramType == "D" {
+			self.argSlotCount++
+		}
+	}
+	if !self.IsStatic() {
+		self.argSlotCount++ // `this` reference
+	}
+}
+
+func (self *Method) injectCodeAttribute(returnType string) {
+	self.maxStack = 4 // todo
+	//本地方法的栈和帧只用于存放参数值
+	self.maxLocals = self.argSlotCount
+	switch returnType[0] {
+	case 'V':
+		self.code = []byte{0xfe, 0xb1} // return
+	case 'L', '[':
+		self.code = []byte{0xfe, 0xb0} // areturn
+	case 'D':
+		self.code = []byte{0xfe, 0xaf} // dreturn
+	case 'F':
+		self.code = []byte{0xfe, 0xae} // freturn
+	case 'J':
+		self.code = []byte{0xfe, 0xad} // lreturn
+	default:
+		self.code = []byte{0xfe, 0xac} // ireturn
+	}
+}
+
 func (self *Method) copyAttributes(cfMethod *fileparser.MemberInfo) {
 	if codeAttr := cfMethod.CodeAttribute(); codeAttr != nil {
 		self.maxStack = codeAttr.MaxStack()
@@ -45,18 +93,18 @@ func (self *Method) ArgSlotCount() uint {
 	return self.argSlotCount
 }
 
-func (self *Method) calcArgSlotCount() {
-	parsedDescriptor := parseMethodDescriptor(self.descriptor)
-	for _, paramType := range parsedDescriptor.parameterTypes {
-		self.argSlotCount++
-		if paramType == "J" || paramType == "D" {
-			self.argSlotCount++
-		}
-	}
-	if !self.IsStatic() {
-		self.argSlotCount++ // `this` reference
-	}
-}
+//func (self *Method) calcArgSlotCount() {
+//	parsedDescriptor := parseMethodDescriptor(self.descriptor)
+//	for _, paramType := range parsedDescriptor.parameterTypes {
+//		self.argSlotCount++
+//		if paramType == "J" || paramType == "D" {
+//			self.argSlotCount++
+//		}
+//	}
+//	if !self.IsStatic() {
+//		self.argSlotCount++ // `this` reference
+//	}
+//}
 
 func (self *Method) IsSynchronized() bool {
 	return 0 != self.accessFlags&ACC_SYNCHRONIZED

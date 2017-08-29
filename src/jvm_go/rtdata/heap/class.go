@@ -20,6 +20,7 @@ type Class struct {
 	staticSlotCount   uint
 	staticVars        Slots
 	initStarted       bool
+	jClass            *Object
 }
 
 func newClass(cf *fileparser.ClassFile) *Class {
@@ -84,13 +85,16 @@ func (self *Class) StaticVars() Slots {
 	return self.staticVars
 }
 
+func (self *Class) JClass() *Object {
+	return self.jClass
+}
+
 func (self *Class) GetMainMethod() *Method {
 	return self.getStaticMethod("main", "([Ljava/lang/String;)V")
 }
 func (self *Class) GetClinitMethod() *Method {
 	return self.getStaticMethod("<clinit>", "()V")
 }
-
 
 func (self *Class) getStaticMethod(name, descriptor string) *Method {
 	for _, method := range self.methods {
