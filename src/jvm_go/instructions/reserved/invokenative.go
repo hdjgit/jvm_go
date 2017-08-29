@@ -4,6 +4,7 @@ import (
 	"jvm_go/instructions/base"
 	"jvm_go/native"
 	"jvm_go/rtdata"
+	_ "jvm_go/native/java/lang"
 )
 
 // Invoke native method

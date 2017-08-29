@@ -83,5 +83,17 @@ func (self *OperandStack) PopSlot() Slot {
 	return self.slots[self.size]
 }
 func (self *OperandStack) GetRefFromTop(n uint) *heap.Object {
+	//fmt.Printf("size:%d\n", self.size-1-n)
+	//fmt.Printf("slot:%v\n", self.slots[self.size-1-n])
 	return self.slots[self.size-1-n].ref
+}
+func (self *OperandStack) PushBoolean(val bool) {
+	if val {
+		self.PushInt(1)
+	} else {
+		self.PushInt(0)
+	}
+}
+func (self *OperandStack) PopBoolean() bool {
+	return self.PopInt() == 1
 }

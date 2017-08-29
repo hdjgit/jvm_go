@@ -7,6 +7,8 @@ package heap
 type Object struct {
 	class *Class
 	data  interface{} //为了支持数组，把fields换成data
+	//记录Object结构体实例的额外信息
+	extra interface{}
 }
 
 //如何知道静态变量和实例变量需要多少空间，以及哪个字段对应Slots中的哪个位置呢？
@@ -32,4 +34,11 @@ func (self *Object) SetRefVar(name, descriptor string, ref *Object) {
 	field := self.class.getField(name, descriptor, false)
 	slots := self.data.(Slots)
 	slots.SetRef(field.slotId, ref)
+}
+
+func (self *Object) Extra() interface{} {
+	return self.extra
+}
+func (self *Object) SetExtra(extra interface{}) {
+	self.extra = extra
 }

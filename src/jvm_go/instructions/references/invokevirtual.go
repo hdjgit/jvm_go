@@ -20,6 +20,7 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 		panic("java.lang.IncompatibleClassChangeError")
 	}
 
+	//fmt.Printf("arg slot count:%d", resolvedMethod.ArgSlotCount())
 	ref := frame.OperandStack().GetRefFromTop(resolvedMethod.ArgSlotCount() - 1)
 	if ref == nil {
 		// hack!
@@ -27,7 +28,8 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 			_println(frame.OperandStack(), methodRef.Descriptor())
 			return
 		}
-
+		fmt.Printf("frame:%+v",frame.OperandStack())
+		fmt.Printf("method info:%+v",methodRef)
 		panic("java.lang.NullPointerException")
 	}
 

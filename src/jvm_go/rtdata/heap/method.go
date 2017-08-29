@@ -1,6 +1,9 @@
 package heap
 
-import "jvm_go/fileparser"
+import (
+	"jvm_go/fileparser"
+	"fmt"
+)
 
 //方法信息相较于field多了字节码，更加复杂一些
 
@@ -34,6 +37,7 @@ func newMethod(class *Class, cfMethod *fileparser.MemberInfo) *Method {
 	md := parseMethodDescriptor(method.descriptor)
 	method.calcArgSlotCount(md.parameterTypes)
 	if method.IsNative() {
+		fmt.Printf("native method:%+v",method)
 		method.injectCodeAttribute(md.returnType)
 	}
 	return method

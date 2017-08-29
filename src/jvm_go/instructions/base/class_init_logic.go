@@ -14,7 +14,7 @@ func InitClass(thread *rtdata.Thread, class *heap.Class) {
 
 func scheduleClinit(thread *rtdata.Thread, class *heap.Class) {
 	clinit := class.GetClinitMethod()
-	if clinit != nil {
+	if clinit != nil && clinit.Class() == class {
 		// exec <clinit>
 		newFrame := thread.NewFrame(clinit)
 		thread.PushFrame(newFrame)

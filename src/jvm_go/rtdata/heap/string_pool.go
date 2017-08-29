@@ -15,7 +15,7 @@ func JString(loader *ClassLoader, goStr string) *Object {
 	}
 
 	chars := stringToUtf16(goStr)  //把go字符串 转换成 java 字符数组（UTF16格式）
-	jChars := &Object{loader.LoadClass("[C"), chars}
+	jChars := &Object{loader.LoadClass("[C"), chars,nil}
 
 	jStr := loader.LoadClass("java/lang/String").NewObject()
 	jStr.SetRefVar("value", "[C", jChars)

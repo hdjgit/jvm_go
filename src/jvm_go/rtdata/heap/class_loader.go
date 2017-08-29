@@ -14,12 +14,53 @@ type ClassLoader struct {
 }
 
 func NewClassLoader(cp *classpath.ClassPath, verboseFlag bool) *ClassLoader {
-	return &ClassLoader{
+	loader := &ClassLoader{
 		cp:          cp,
 		classMap:    make(map[string]*Class),
 		verboseFlag: verboseFlag,
 	}
+	loader.loadBasicClasses()
+	loader.loadPrimitiveClasses()
+	return loader
 }
+
+func (self *ClassLoader) loadPrimitiveClasses() {
+	for primitiveType, _ := range primitiveTypes {
+		self.loadPrimitiveClass(primitiveType)
+	}
+}
+
+//加载基本类型
+/*
+1) void 的基本类型的类名就是void
+2）基本类型的类没有超类，也没有实现任何接口
+3）非基本类型的类对象是通过ldc指令加载到操作数栈中的
+而基本类型的类对象，编译后的指令是getstatic
+ */
+func (self *ClassLoader) loadPrimitiveClass(className string) {
+	class := &Class{
+		accessFlags: ACC_PUBLIC, // todo
+		name:        className,
+		loader:      self,
+		initStarted: true,
+	}
+	class.jClass = self.classMap["java/lang/Class"].NewObject()
+	class.jClass.extra = class
+	self.classMap[className] = class
+}
+
+func (self *ClassLoader) loadBasicClasses() {
+	//加载Class会加载Object等类
+	jlClassClass := self.LoadClass("java/lang/Class")
+	//将这些类的extra设置成class
+	for _, class := range self.classMap {
+		if class.jClass == nil {
+			class.jClass = jlClassClass.NewObject()
+			class.jClass.extra = class
+		}
+	}
+}
+
 
 func (self *ClassLoader) LoadClass(name string) *Class {
 	if class, ok := self.classMap[name]; ok {

@@ -3,7 +3,6 @@ package base
 import (
 	"jvm_go/rtdata"
 	"jvm_go/rtdata/heap"
-	"fmt"
 )
 
 /**
