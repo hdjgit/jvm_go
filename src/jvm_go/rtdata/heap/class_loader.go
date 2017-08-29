@@ -64,12 +64,23 @@ func (self *ClassLoader) loadBasicClasses() {
 
 func (self *ClassLoader) LoadClass(name string) *Class {
 	if class, ok := self.classMap[name]; ok {
-		return class //类已经加载过了
+		// already loaded
+		return class
 	}
-	if name[0] == '[' {
-		return self.loadArrayClass(name)
+
+	var class *Class
+	if name[0] == '[' { // array class
+		class = self.loadArrayClass(name)
+	} else {
+		class = self.loadNonArrayClass(name)
 	}
-	return self.loadNonArrayClass(name)
+
+	if jlClassClass, ok := self.classMap["java/lang/Class"]; ok {
+		class.jClass = jlClassClass.NewObject()
+		class.jClass.extra = class
+	}
+
+	return class
 }
 
 //数组类直接在内存中生成
