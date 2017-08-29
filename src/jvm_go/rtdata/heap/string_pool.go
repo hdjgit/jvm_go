@@ -48,3 +48,14 @@ func (self *Object) GetRefVar(name, descriptor string) *Object {
 	slots := self.data.(Slots)
 	return slots.GetRef(field.slotId)
 }
+
+// todo
+func InternString(jStr *Object) *Object {
+	goStr := GoString(jStr)
+	if internedStr, ok := internedStrings[goStr]; ok {
+		return internedStr
+	}
+
+	internedStrings[goStr] = jStr
+	return jStr
+}
