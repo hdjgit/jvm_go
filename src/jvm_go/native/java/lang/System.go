@@ -18,6 +18,7 @@ func init() {
 	native.Register(jlSystem, "setOut0", "(Ljava/io/PrintStream;)V", setOut0)
 	native.Register(jlSystem, "setErr0", "(Ljava/io/PrintStream;)V", setErr0)
 	native.Register(jlSystem, "currentTimeMillis", "()J", currentTimeMillis)
+	native.Register(jlSystem, "mapLibraryName", "(Ljava/lang/String;)Ljava/lang/String;", mapLibraryName)
 }
 
 // public static native void arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
@@ -58,7 +59,6 @@ func checkArrayCopy(src, dest *heap.Object) bool {
 	}
 	return true
 }
-
 
 // private static native Properties initProperties(Properties props);
 // (Ljava/util/Properties;)Ljava/util/Properties;
@@ -147,4 +147,8 @@ func currentTimeMillis(frame *rtdata.Frame) {
 	millis := time.Now().UnixNano() / int64(time.Millisecond)
 	stack := frame.OperandStack()
 	stack.PushLong(millis)
+}
+
+func mapLibraryName(frame *rtdata.Frame) {
+	//TODO 啥都不做
 }
