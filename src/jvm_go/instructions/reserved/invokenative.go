@@ -5,11 +5,13 @@ import (
 	"jvm_go/native"
 	"jvm_go/rtdata"
 	_ "jvm_go/native/java/lang"
+	_ "jvm_go/native/sun/misc"
 )
 
 // Invoke native method
 type INVOKE_NATIVE struct{ base.NoOperandsInstruction }
 
+//VM.savedProps.setProperty("foo","bar")
 func (self *INVOKE_NATIVE) Execute(frame *rtdata.Frame) {
 	method := frame.Method()
 	className := method.Class().Name()

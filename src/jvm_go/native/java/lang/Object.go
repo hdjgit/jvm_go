@@ -11,7 +11,7 @@ const jlObject = "java/lang/Object"
 func init() {
 	native.Register(jlObject, "getClass", "()Ljava/lang/Class;", getClass)
 	native.Register(jlObject, "hashCode", "()I", hashCode)
-	//native.Register(jlObject, "clone", "()Ljava/lang/Object;", clone)
+	native.Register(jlObject, "clone", "()Ljava/lang/Object;", clone)
 }
 
 
@@ -33,13 +33,13 @@ func hashCode(frame *rtdata.Frame) {
 
 // protected native Object clone() throws CloneNotSupportedException;
 // ()Ljava/lang/Object;
-//func clone(frame *rtdata.Frame) {
-//	this := frame.LocalVars().GetThis()
-//
-//	cloneable := this.Class().Loader().LoadClass("java/lang/Cloneable")
-//	if !this.Class().IsImplements(cloneable) {
-//		panic("java.lang.CloneNotSupportedException")
-//	}
-//
-//	frame.OperandStack().PushRef(this.Clone())
-//}
+func clone(frame *rtdata.Frame) {
+	this := frame.LocalVars().GetThis()
+
+	cloneable := this.Class().Loader().LoadClass("java/lang/Cloneable")
+	if !this.Class().IsImplements(cloneable) {
+		panic("java.lang.CloneNotSupportedException")
+	}
+
+	frame.OperandStack().PushRef(this.Clone())
+}

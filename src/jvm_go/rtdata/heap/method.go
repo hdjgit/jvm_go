@@ -9,10 +9,11 @@ import (
 
 type Method struct {
 	ClassMember
-	maxStack     uint
-	maxLocals    uint
-	code         []byte
-	argSlotCount uint
+	maxStack       uint
+	maxLocals      uint
+	code           []byte
+	argSlotCount   uint
+	exceptionTable ExceptionTable
 }
 
 func newMethods(class *Class, cfMethods []*fileparser.MemberInfo) []*Method {
@@ -37,7 +38,7 @@ func newMethod(class *Class, cfMethod *fileparser.MemberInfo) *Method {
 	md := parseMethodDescriptor(method.descriptor)
 	method.calcArgSlotCount(md.parameterTypes)
 	if method.IsNative() {
-		fmt.Printf("native method:%+v",method)
+		fmt.Printf("native method:%+v", method)
 		method.injectCodeAttribute(md.returnType)
 	}
 	return method
@@ -80,6 +81,7 @@ func (self *Method) copyAttributes(cfMethod *fileparser.MemberInfo) {
 		self.maxStack = codeAttr.MaxStack()
 		self.maxLocals = codeAttr.MaxLocals()
 		self.code = codeAttr.Code()
+		self.exceptionTable = newExceptionTable(codeAttr.ExceptionTable(), self.class.constantPool)
 	}
 }
 
@@ -127,4 +129,12 @@ func (self *Method) IsAbstract() bool {
 }
 func (self *Method) IsStrict() bool {
 	return 0 != self.accessFlags&ACC_STRICT
+}
+
+func (self *Method) FindExceptionHandler(exClass *Class, pc int) int {
+	handler := self.exceptionTable.findExceptionHandler(exClass, pc)
+	if handler != nil {
+		return handler.handlerPc
+	}
+	return -1
 }
