@@ -124,6 +124,9 @@ func (self *Class) GetPackageName() string {
 	return ""
 }
 
+func (self *Class) AccessFlags() uint16 {
+	return self.accessFlags
+}
 func (self *Class) Name() string {
 	return self.name
 }
@@ -213,4 +216,62 @@ func (self *Class) GetInstanceMethod(name, descriptor string) *Method {
 
 func (self *Class) SourceFile() string {
 	return self.sourceFile
+}
+
+func (self *Class) GetStaticMethod(name, descriptor string) *Method {
+	return self.getMethod(name, descriptor, true)
+}
+
+func (self *Object) SetIntVar(name, descriptor string, val int32) {
+	field := self.class.getField(name, descriptor, false)
+	slots := self.data.(Slots)
+	slots.SetInt(field.slotId, val)
+}
+
+func (self *Class) GetFields(publicOnly bool) []*Field {
+	if publicOnly {
+		publicFields := make([]*Field, 0, len(self.fields))
+		for _, field := range self.fields {
+			if field.IsPublic() {
+				publicFields = append(publicFields, field)
+			}
+		}
+		return publicFields
+	} else {
+		return self.fields
+	}
+}
+
+
+func (self *Class) GetConstructor(descriptor string) *Method {
+	return self.GetInstanceMethod("<init>", descriptor)
+}
+
+func (self *Class) GetConstructors(publicOnly bool) []*Method {
+	constructors := make([]*Method, 0, len(self.methods))
+	for _, method := range self.methods {
+		if method.isConstructor() {
+			if !publicOnly || method.IsPublic() {
+				constructors = append(constructors, method)
+			}
+		}
+	}
+	return constructors
+}
+
+func (self *Class) Interfaces() []*Class {
+	return self.interfaces
+}
+
+
+func (self *Class) GetMethods(publicOnly bool) []*Method {
+	methods := make([]*Method, 0, len(self.methods))
+	for _, method := range self.methods {
+		if !method.isClinit() && !method.isConstructor() {
+			if !publicOnly || method.IsPublic() {
+				methods = append(methods, method)
+			}
+		}
+	}
+	return methods
 }

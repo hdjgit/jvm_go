@@ -21,8 +21,10 @@ func FindNativeMethod(className, methodName, methodDescriptor string) NativeMeth
 	}
 	//java.lang.Object通过registerNatives的本地方法来注册其他本地方法的，
 	//本书实现，所有注册都是自己实现的，所以这里使用一个空的方法
-	if methodDescriptor == "()V" && methodName == "registerNatives" {
-		return emptyNativeMethod
+	if methodDescriptor == "()V" {
+		if methodName == "registerNatives" || methodName == "initIDs" {
+			return emptyNativeMethod
+		}
 	}
 	return nil
 }

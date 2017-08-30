@@ -28,7 +28,7 @@ func (self *Object) Fields() Slots {
 }
 
 func (self *Object) IsInstanceOf(class *Class) bool {
-	return class.isAssignableFrom(self.class)
+	return class.IsAssignableFrom(self.class)
 }
 func (self *Object) SetRefVar(name, descriptor string, ref *Object) {
 	field := self.class.getField(name, descriptor, false)
@@ -41,4 +41,12 @@ func (self *Object) Extra() interface{} {
 }
 func (self *Object) SetExtra(extra interface{}) {
 	self.extra = extra
+}
+func (self *Object) Data() interface{} {
+	return self.data
+}
+func (self *Object) GetIntVar(name, descriptor string) int32 {
+	field := self.class.getField(name, descriptor, false)
+	slots := self.data.(Slots)
+	return slots.GetInt(field.slotId)
 }

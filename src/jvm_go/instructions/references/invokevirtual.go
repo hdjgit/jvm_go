@@ -20,7 +20,6 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 		panic("java.lang.IncompatibleClassChangeError")
 	}
 
-
 	ref := frame.OperandStack().GetRefFromTop(resolvedMethod.ArgSlotCount() - 1)
 	if ref == nil {
 		// hack!
@@ -29,8 +28,9 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 			return
 		}
 		fmt.Printf("arg slot count:%d\n", resolvedMethod.ArgSlotCount())
-		fmt.Printf("frame:%+v",frame.OperandStack())
-		fmt.Printf("method info:%+v",methodRef)
+		fmt.Printf("frame:%+v", frame.OperandStack())
+		fmt.Printf("method info:%+v", methodRef)
+		fmt.Printf("class info:%+v", methodRef.ResolvedClass())
 		panic("java.lang.NullPointerException")
 	}
 
@@ -39,8 +39,11 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 		resolvedMethod.Class().GetPackageName() != currentClass.GetPackageName() &&
 		ref.Class() != currentClass &&
 		!ref.Class().IsSubClassOf(currentClass) {
-
-		panic("java.lang.IllegalAccessError")
+		if !(ref.Class().IsArray() && resolvedMethod.Name() == "clone") {
+			fmt.Printf("method:%+v\n", resolvedMethod)
+			fmt.Printf("class info:%+v\n", resolvedMethod.Class())
+			panic("java.lang.IllegalAccessError")
+		}
 	}
 
 	methodToBeInvoked := heap.LookupMethodInClass(ref.Class(),

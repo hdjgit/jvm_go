@@ -100,3 +100,29 @@ func (self *ClassPath) ReadClass(className string) ([]byte, Entry, error) {
 	fmt.Printf("read class from classpath!\n")
 	return self.UserClasspath.ReadClass(fileName)
 }
+
+func Parse(jreOption, cpOption string) *ClassPath {
+	cp := &ClassPath{}
+	cp.parseBootAndExtClasspath(jreOption)
+	cp.parseUserClasspath(cpOption)
+	return cp
+}
+
+func (self *ClassPath) parseBootAndExtClasspath(jreOption string) {
+	jreDir := getJreDir(jreOption)
+
+	// jre/lib/*
+	jreLibPath := filepath.Join(jreDir, "lib", "*")
+	self.BootStrapClasspath = NewWildcardEntry(jreLibPath)
+
+	// jre/lib/ext/*
+	jreExtPath := filepath.Join(jreDir, "lib", "ext", "*")
+	self.ExtensionClasspath = NewWildcardEntry(jreExtPath)
+}
+
+func (self *ClassPath) parseUserClasspath(cpOption string) {
+	if cpOption == "" {
+		cpOption = "."
+	}
+	self.UserClasspath = NewEntry(cpOption)
+}

@@ -45,3 +45,8 @@ func (self *Field) isLongOrDouble() bool {
 func (self *Field) ConstValueIndex() uint {
 	return self.constValueIndex
 }
+// reflection
+func (self *Field) Type() *Class {
+	className := toClassName(self.descriptor)
+	return self.class.loader.LoadClass(className)
+}

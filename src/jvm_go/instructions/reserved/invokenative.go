@@ -5,7 +5,11 @@ import (
 	"jvm_go/native"
 	"jvm_go/rtdata"
 	_ "jvm_go/native/java/lang"
+	_ "jvm_go/native/java/io"
+	_ "jvm_go/native/java/security"
 	_ "jvm_go/native/sun/misc"
+	_ "jvm_go/native/sun/reflect"
+	_ "jvm_go/native/java/util/concurrent/atomic"
 )
 
 // Invoke native method

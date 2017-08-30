@@ -8,6 +8,8 @@ type ClassMember struct {
 	name        string
 	descriptor  string
 	class       *Class
+	signature      string
+	annotationData []byte // RuntimeVisibleAnnotations_attribute
 }
 
 //从class文件中拷贝数据
@@ -46,6 +48,15 @@ func (self *ClassMember) Descriptor() string {
 }
 func (self *ClassMember) Class() *Class {
 	return self.class
+}
+func (self *ClassMember) Signature() string {
+	return self.signature
+}
+func (self *ClassMember) AnnotationData() []byte {
+	return self.annotationData
+}
+func (self *ClassMember) AccessFlags() uint16 {
+	return self.accessFlags
 }
 
 // jvms 5.4.4

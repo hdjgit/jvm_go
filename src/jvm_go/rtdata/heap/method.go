@@ -2,7 +2,6 @@ package heap
 
 import (
 	"jvm_go/fileparser"
-	"fmt"
 )
 
 //方法信息相较于field多了字节码，更加复杂一些
@@ -15,6 +14,10 @@ type Method struct {
 	argSlotCount   uint
 	lineNumberTable *fileparser.LineNumberTableAttribute
 	exceptionTable ExceptionTable
+	parameterAnnotationData []byte                         // RuntimeVisibleParameterAnnotations_attribute
+	annotationDefaultData   []byte                         // AnnotationDefault_attribute
+	parsedDescriptor        *MethodDescriptor
+	exceptions              *fileparser.ExceptionsAttribute // todo: rename
 }
 
 func newMethods(class *Class, cfMethods []*fileparser.MemberInfo) []*Method {
@@ -37,9 +40,9 @@ func newMethod(class *Class, cfMethod *fileparser.MemberInfo) *Method {
 	method.copyMemberInfo(cfMethod)
 	method.copyAttributes(cfMethod)
 	md := parseMethodDescriptor(method.descriptor)
+	method.parsedDescriptor = md
 	method.calcArgSlotCount(md.parameterTypes)
 	if method.IsNative() {
-		fmt.Printf("native method:%+v", method)
 		method.injectCodeAttribute(md.returnType)
 	}
 	return method
@@ -85,6 +88,10 @@ func (self *Method) copyAttributes(cfMethod *fileparser.MemberInfo) {
 		self.lineNumberTable = codeAttr.LineNumberTableAttribute()
 		self.exceptionTable = newExceptionTable(codeAttr.ExceptionTable(),
 			self.class.constantPool)
+		self.exceptions = cfMethod.ExceptionsAttribute()
+		self.annotationData = cfMethod.RuntimeVisibleAnnotationsAttributeData()
+		self.parameterAnnotationData = cfMethod.RuntimeVisibleParameterAnnotationsAttributeData()
+		self.annotationDefaultData = cfMethod.AnnotationDefaultAttributeData()
 	}
 }
 
@@ -149,4 +156,56 @@ func (self *Method) GetLineNumber(pc int) int {
 		return -1
 	}
 	return self.lineNumberTable.GetLineNumber(pc)
+}
+
+func (self *Method) isConstructor() bool {
+	return !self.IsStatic() && self.name == "<init>"
+}
+func (self *Method) ExceptionTypes() []*Class {
+	if self.exceptions == nil {
+		return nil
+	}
+
+	exIndexTable := self.exceptions.ExceptionIndexTable()
+	exClasses := make([]*Class, len(exIndexTable))
+	cp := self.class.constantPool
+
+	for i, exIndex := range exIndexTable {
+		classRef := cp.GetConstant(uint(exIndex)).(*ClassRef)
+		exClasses[i] = classRef.ResolvedClass()
+	}
+
+	return exClasses
+}
+
+// reflection
+func (self *Method) ParameterTypes() []*Class {
+	if self.argSlotCount == 0 {
+		return nil
+	}
+
+	paramTypes := self.parsedDescriptor.parameterTypes
+	paramClasses := make([]*Class, len(paramTypes))
+	for i, paramType := range paramTypes {
+		paramClassName := toClassName(paramType)
+		paramClasses[i] = self.class.loader.LoadClass(paramClassName)
+	}
+
+	return paramClasses
+}
+func (self *Method) ReturnType() *Class {
+	returnType := self.parsedDescriptor.returnType
+	returnClassName := toClassName(returnType)
+	return self.class.loader.LoadClass(returnClassName)
+}
+
+func (self *Method) ParameterAnnotationData() []byte {
+	return self.parameterAnnotationData
+}
+
+func (self *Method) isClinit() bool {
+	return self.IsStatic() && self.name == "<clinit>"
+}
+func (self *Method) AnnotationDefaultData() []byte {
+	return self.annotationDefaultData
 }
