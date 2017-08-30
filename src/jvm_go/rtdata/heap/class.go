@@ -21,6 +21,7 @@ type Class struct {
 	staticVars        Slots
 	initStarted       bool
 	jClass            *Object
+	sourceFile        string
 }
 
 func newClass(cf *fileparser.ClassFile) *Class {
@@ -32,7 +33,15 @@ func newClass(cf *fileparser.ClassFile) *Class {
 	class.constantPool = newConstantPool(class, cf.ConstantPool())
 	class.fields = newFields(class, cf.Fields())
 	class.methods = newMethods(class, cf.Methods())
+	class.sourceFile = getSourceFile(cf)
 	return class
+}
+
+func getSourceFile(cf *fileparser.ClassFile) string {
+	if sfAttr := cf.SourceFileAttribute(); sfAttr != nil {
+		return sfAttr.FileName()
+	}
+	return "Unknown" // todo
 }
 
 // jvms 5.4.4
@@ -200,4 +209,8 @@ func (self *Class) getMethod(name, descriptor string, isStatic bool) *Method {
 
 func (self *Class) GetInstanceMethod(name, descriptor string) *Method {
 	return self.getMethod(name, descriptor, false)
+}
+
+func (self *Class) SourceFile() string {
+	return self.sourceFile
 }

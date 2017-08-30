@@ -36,6 +36,8 @@ func fillInStackTrace(frame *rtdata.Frame) {
 }
 
 func createStackTraceElements(tObj *heap.Object, thread *rtdata.Thread) []*StackTraceElement {
+	//由于栈顶两帧正在执行fillInStackTrace和fillStackTrace方法，所以要跳过这两帧
+	//这两帧的下面正在执行异常类的构造函数，所以也要跳过
 	skip := distanceToObject(tObj.Class()) + 2
 	frames := thread.GetFrames()[skip:]
 	stes := make([]*StackTraceElement, len(frames))
@@ -60,6 +62,6 @@ func createStackTraceElement(frame *rtdata.Frame) *StackTraceElement {
 		fileName:   class.SourceFile(),
 		className:  class.JavaName(),
 		methodName: method.Name(),
-		lineNumber: method.GetLineNumber(frame.NextPC() - 1),
+		lineNumber: method.GetLineNumber(frame.NextPC() - 1), //TODO ?
 	}
 }

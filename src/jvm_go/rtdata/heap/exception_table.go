@@ -21,6 +21,7 @@ func newExceptionTable(entries []*fileparser.ExceptionTableEntry, cp *ConstantPo
 			catchType: getCatchType(uint(entry.CatchType()), cp),
 		}
 	}
+	return table
 }
 
 func getCatchType(index uint, cp *ConstantPool) *ClassRef {
